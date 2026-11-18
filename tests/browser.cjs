@@ -118,37 +118,51 @@ async function checkoutResetsAfterEmptyCart(page) {
 
 async function checkFloatingNavigation(page) {
   await page.goto(site + 'prototype-e/?view=cart');
+  await page.evaluate(() => localStorage.removeItem('bastani-noon:e'));
+  await page.reload();
   const dock = page.locator('.floating-dock');
-  assert.equal(await dock.locator('a[aria-current="page"]').getAttribute('data-view'), 'cart');
-  const toggle = page.getByRole('button', { name: 'باز کردن فهرست' });
-  await toggle.click();
-  const drawer = page.getByRole('dialog', { name: 'دسته‌بندی‌ها' });
-  await drawer.waitFor();
-  await page.keyboard.press('Escape');
-  await drawer.waitFor({ state: 'hidden' });
-  assert.ok(await toggle.evaluate(button => button === document.activeElement));
-  await toggle.click();
-  await drawer.locator('[data-category="traditional"]').click();
-  assert.equal(new URL(page.url()).searchParams.get('view'), 'menu');
-  assert.equal(await page.locator('main [data-category="traditional"]').getAttribute('aria-pressed'), 'true');
-  await drawer.waitFor({ state: 'hidden' });
+  const dockElement = await dock.elementHandle();
+  assert.equal(await page.locator('.navigation-toggle, .navigation-drawer').count(), 0);
+  assert.ok(await page.getByRole('link', { name: 'مقایسهٔ طرح‌ها' }).isVisible());
+  assert.equal(await dock.getAttribute('data-active'), 'cart');
+  assert.ok(await dock.evaluate(element => {
+    const duration = parseFloat(getComputedStyle(element, '::before').transitionDuration);
+    return duration > 0 && duration <= 0.25;
+  }));
 
-  const lastProduct = page.locator('.menu-card').last();
+  await page.evaluate(() => {
+    window.motionEvents = [];
+    document.addEventListener('animationstart', event => {
+      window.motionEvents.push([event.animationName, event.target.className]);
+    });
+    document.addEventListener('transitionrun', event => {
+      if (event.target instanceof HTMLDialogElement && event.propertyName === 'opacity') {
+        window.motionEvents.push(['dialog-opacity', event.target.open ? 'open' : 'closed']);
+      }
+    });
+  });
+  const waitForMotion = (name, target) => page.waitForFunction(
+    ([name, target]) => window.motionEvents.some(([event, className]) => event === name && className.includes(target)),
+    [name, target],
+  );
+
+  await dock.locator('[data-view="menu"]').click();
+  assert.ok(await dockElement.evaluate(element => element === document.querySelector('.floating-dock')));
+  await page.locator('main [data-category="traditional"]').click();
+  await waitForMotion('view-enter', 'menu-grid');
+  assert.equal(await page.locator('main [data-category="traditional"]').getAttribute('aria-pressed'), 'true');
   await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
-  const [product, floating] = await Promise.all([lastProduct.boundingBox(), dock.boundingBox()]);
+  const [product, floating] = await Promise.all([page.locator('.menu-card').last().boundingBox(), dock.boundingBox()]);
   assert.ok(product && floating && product.y + product.height <= floating.y);
 
-  const dockElement = await dock.elementHandle();
-  assert.ok(await dock.evaluate(element => parseFloat(getComputedStyle(element, '::before').transitionDuration) > 0));
   await dock.locator('[data-view="builder"]').click();
-  assert.ok(await dockElement.evaluate(element => element === document.querySelector('.floating-dock')));
+  await waitForMotion('view-enter', 'builder-layout');
   assert.equal(await dock.getAttribute('data-active'), 'builder');
-  await page.waitForFunction(() => [...document.querySelector('main').children].some(section =>
-    section.getAnimations().some(animation => animation.animationName === 'dock-reveal')));
-  await page.waitForFunction(() => {
-    const highlight = getComputedStyle(document.querySelector('.floating-dock'), '::before');
-    return highlight.transform !== 'none' && new DOMMatrixReadOnly(highlight.transform).m41 < 0;
-  });
+  await page.locator('[data-count="2"]').click();
+  await waitForMotion('view-enter', 'preview-art');
+  await waitForMotion('choice-enter', 'builder-choice');
+  await page.locator('[data-scoop="1"]').click();
+  await waitForMotion('view-enter', 'flavor-choices');
   await dock.locator('[data-view="cart"]').click();
   assert.equal(await dock.getAttribute('data-active'), 'cart');
 
@@ -157,20 +171,23 @@ async function checkFloatingNavigation(page) {
     .transitionDuration.split(',').every(duration => parseFloat(duration) === 0)));
   await dock.locator('[data-view="builder"]').click();
   assert.ok(await page.locator('main').evaluate(element => element.getAnimations({ subtree: true })
-    .every(animation => animation.animationName !== 'dock-reveal')));
+    .every(animation => animation.animationName !== 'view-enter')));
   await page.emulateMedia({ reducedMotion: 'no-preference' });
 
   for (const width of [390, 1100]) {
     await page.setViewportSize({ width, height: 850 });
+    await page.evaluate(() => { window.motionEvents = []; });
     await dock.locator('[data-view="menu"]').click();
-    const trigger = page.locator('button[data-product="saffron"]').first();
-    await trigger.click();
-    const details = page.locator('dialog[open]');
+    await page.locator('button[data-product="saffron"]').first().click();
+    const details = page.locator('dialog');
     const close = details.getByRole('button', { name: 'بستن جزئیات' });
+    await waitForMotion('dialog-opacity', 'open');
     const [button, photo] = await Promise.all([close.boundingBox(), details.locator('.photo').boundingBox()]);
     assert.ok(button && photo && button.x >= photo.x && button.x + button.width <= photo.x + photo.width &&
       button.y >= photo.y && button.y + button.height <= photo.y + photo.height);
-    await close.click();
+    if (width === 390) await close.click();
+    else await page.keyboard.press('Escape');
+    await waitForMotion('dialog-opacity', 'closed');
     await details.waitFor({ state: 'hidden' });
   }
 }

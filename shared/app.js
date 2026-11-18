@@ -65,29 +65,11 @@ export function start(mode) {
         ${key === mode ? 'aria-current="page"' : ''}><b lang="en">${key.toUpperCase()}</b><span>${title}</span></a>`).join('')}
     </nav>`;
 
-    header.innerHTML = mode === 'e'
-      ? `<div class="header-inner">
-          ${brand}
-          <button class="icon-button navigation-toggle" type="button" data-action="open-navigation" aria-label="باز کردن فهرست" aria-haspopup="dialog" aria-controls="navigation-drawer">${icon('hamburger')}</button>
-        </div>
-        <dialog class="navigation-drawer" id="navigation-drawer" aria-labelledby="navigation-title">
-          <div class="drawer-content">
-            <div class="drawer-heading">
-              <h2 id="navigation-title">دسته‌بندی‌ها</h2>
-              <button class="icon-button" type="button" data-action="close-navigation" aria-label="بستن فهرست" autofocus>${icon('close')}</button>
-            </div>
-            <nav class="drawer-categories" aria-label="دسته‌بندی منو">
-              ${[{ id: 'all', name: 'همهٔ محصولات' }, ...categories].map(item => `<button type="button" data-category="${item.id}" aria-pressed="${item.id === category}">${item.name}${icon('left')}</button>`).join('')}
-            </nav>
-            ${switcher}
-          </div>
-        </dialog>`
-      : `<div class="header-inner">
-          ${brand}
-          <nav class="site-links" aria-label="ناوبری فروشگاه">${links}</nav>
-          ${cartLink}
-        </div>
-        ${switcher}`;
+    header.innerHTML = `<div class="header-inner">
+      ${brand}
+      ${dock ? '' : `<nav class="site-links" aria-label="ناوبری فروشگاه">${links}</nav>${cartLink}`}
+    </div>
+    ${switcher}`;
     if (dock) {
       dock.innerHTML = links + cartLink;
       dock.dataset.active = dock.querySelector('[aria-current="page"]')?.dataset.view ?? '';
@@ -96,7 +78,8 @@ export function start(mode) {
     if (previous) Array.from(navigation.querySelectorAll('a')).find(link => link.getAttribute('href') === previous)?.focus({ preventScroll: true });
   }
 
-  function render() {
+  function render(switchTarget) {
+    const previousView = main.dataset.view;
     main.dataset.view = view;
     const demo = document.querySelector('.demo-label');
     demo.hidden = hideDemo;
@@ -109,6 +92,12 @@ export function start(mode) {
         break;
       case 'confirmation': main.innerHTML = renderConfirmation(order); break;
       default: main.innerHTML = mode === 'b' ? discoveryMenu(category) : quickMenu(category, mode === 'c');
+    }
+    if (dock && previousView) {
+      const arrivals = previousView !== view ? main.children : switchTarget && main.querySelectorAll(switchTarget);
+      if (arrivals) {
+        for (const element of arrivals) element.classList.add('view-arrival');
+      }
     }
     renderHeader();
   }
@@ -139,10 +128,11 @@ export function start(mode) {
       candidate.dataset[key] === value && candidate.dataset.delta === control.dataset.delta
     ));
     matching?.focus({ preventScroll: true });
+    if (dock) matching?.classList.add('choice-arrival');
   }
 
-  function rerenderControl(control, key, value) {
-    render();
+  function rerenderControl(control, key, value, switchTarget) {
+    render(switchTarget);
     refreshControl(control, key, value);
   }
 
@@ -168,7 +158,7 @@ export function start(mode) {
       : [...selection.toppings, topping];
 
     const [key] = Object.keys(control.dataset);
-    rerenderControl(control, key, control.dataset[key]);
+    rerenderControl(control, key, control.dataset[key], key === 'scoop' ? '.flavor-choices' : '.preview-art, .preview-info strong');
   }
 
   dialog.addEventListener('change', event => {
@@ -178,32 +168,17 @@ export function start(mode) {
   });
 
   document.addEventListener('click', event => {
-    if (event.target.matches('.navigation-drawer[open]')) {
-      event.target.close();
-      return;
-    }
     const control = event.target.closest('button, a');
     if (!control || control.disabled) return;
     const data = control.dataset;
     if (data.view && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
       event.preventDefault();
-      const dockSwitch = dock?.contains(control) && data.view !== view;
       go(data.view);
-      if (dockSwitch) {
-        for (const section of main.children) section.classList.add('dock-arrival');
-      }
     } else if (data.category) {
+      const changed = category !== data.category;
       category = data.category;
-      const drawer = control.closest('.navigation-drawer');
-      if (drawer) {
-        drawer.close();
-        save();
-        go('menu');
-        main.querySelector('#menu-list-title').focus();
-      } else {
-        rerenderControl(control, 'category', category);
-        document.activeElement.scrollIntoView({ block: 'nearest', inline: 'nearest' });
-      }
+      rerenderControl(control, 'category', category, changed ? '.menu-grid' : undefined);
+      document.activeElement.scrollIntoView({ block: 'nearest', inline: 'nearest' });
     } else if (data.product) {
       detailProduct = findById(products, data.product);
       dialog.querySelector('form').innerHTML = productDetails(detailProduct, detailProduct.variants[0]);
@@ -229,7 +204,7 @@ export function start(mode) {
       if (!cart.length) checkout = createCheckout();
       if (quantity < 1 && row.id === editId) editId = undefined;
       save();
-      render();
+      render('.order-total, .empty-state');
       if (quantity < 1) document.querySelector('#view-title').focus({ preventScroll: true });
       else refreshControl(control, 'quantity', data.quantity);
     } else if (data.action === 'save-builder') {
@@ -249,19 +224,15 @@ export function start(mode) {
       go('cart');
     } else if (data.action === 'checkout-back') {
       checkout.step -= 1;
-      render();
+      render('.checkout-form');
       document.querySelector('#checkout-step-title').focus();
-    } else if (data.action === 'open-navigation') {
-      header.querySelector('.navigation-drawer').showModal();
-    } else if (data.action === 'close-navigation') {
-      control.closest('dialog').close();
     } else if (data.action === 'close-detail') {
       dialog.close();
     } else if (data.action === 'dismiss-demo') {
       hideDemo = true;
       save();
       control.closest('.demo-label').hidden = true;
-      header.querySelector('.navigation-toggle, .review-home').focus();
+      header.querySelector('.review-home').focus();
     }
   });
 
@@ -317,7 +288,7 @@ export function start(mode) {
       return;
     }
     checkout.step += 1;
-    render();
+    render('.checkout-form');
     document.querySelector('#checkout-step-title').focus();
   });
 

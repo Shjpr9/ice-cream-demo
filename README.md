@@ -18,7 +18,7 @@ The site uses HTML, CSS, and browser-native JavaScript modules. It needs a stati
 | B · Discovery-first | `prototype-b/` | Photo-led flavor guide, visible allergens, and expandable builder sections | Noto Naskh Arabic |
 | C · Builder-first | `prototype-c/` | Opens in a five-step builder with a live illustration and price. The full catalog is one tap away. | Noto Kufi Arabic |
 | D · Menu-first with Dastkhat | `prototype-d/` | Same layout and ordering flow as A for a typography comparison | [Dastkhat](https://github.com/dastyar-io/dastkhat-font) |
-| E · Floating navigation | `prototype-e/` | Hamburger drawer for categories and a floating dock for the menu, builder, and cart | Dastkhat |
+| E · Floating navigation | `prototype-e/` | Floating dock for the menu, builder, and cart with quick transitions | Dastkhat |
 
 Fonts and product images are served locally. The product image set is AI-generated for the fictional menu. Font license copies are in [shared/assets/fonts](shared/assets/fonts/). The product catalog and availability are in [shared/data/catalog.js](shared/data/catalog.js).
 
