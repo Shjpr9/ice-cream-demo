@@ -137,6 +137,37 @@ async function checkFloatingNavigation(page) {
   await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
   const [product, floating] = await Promise.all([lastProduct.boundingBox(), dock.boundingBox()]);
   assert.ok(product && floating && product.y + product.height <= floating.y);
+
+  const dockElement = await dock.elementHandle();
+  assert.ok(await dock.evaluate(element => parseFloat(getComputedStyle(element, '::before').transitionDuration) > 0));
+  await dock.locator('[data-view="builder"]').click();
+  assert.ok(await dockElement.evaluate(element => element === document.querySelector('.floating-dock')));
+  assert.equal(await dock.getAttribute('data-active'), 'builder');
+  await page.waitForFunction(() => {
+    const highlight = getComputedStyle(document.querySelector('.floating-dock'), '::before');
+    return highlight.transform !== 'none' && new DOMMatrixReadOnly(highlight.transform).m41 < 0;
+  });
+  await dock.locator('[data-view="cart"]').click();
+  assert.equal(await dock.getAttribute('data-active'), 'cart');
+
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  assert.ok(await dock.evaluate(element => getComputedStyle(element, '::before')
+    .transitionDuration.split(',').every(duration => parseFloat(duration) === 0)));
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+
+  for (const width of [390, 1100]) {
+    await page.setViewportSize({ width, height: 850 });
+    await dock.locator('[data-view="menu"]').click();
+    const trigger = page.locator('button[data-product="saffron"]').first();
+    await trigger.click();
+    const details = page.locator('dialog[open]');
+    const close = details.getByRole('button', { name: 'بستن جزئیات' });
+    const [button, photo] = await Promise.all([close.boundingBox(), details.locator('.photo').boundingBox()]);
+    assert.ok(button && photo && button.x >= photo.x && button.x + button.width <= photo.x + photo.width &&
+      button.y >= photo.y && button.y + button.height <= photo.y + photo.height);
+    await close.click();
+    await details.waitFor({ state: 'hidden' });
+  }
 }
 
 async function run() {

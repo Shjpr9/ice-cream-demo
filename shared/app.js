@@ -15,6 +15,7 @@ const createCheckout = () => ({ step: 0, method: 'here', payment: 'online', note
 export function start(mode) {
   const main = document.querySelector('main');
   const header = document.querySelector('.site-header');
+  const dock = document.querySelector('.floating-dock');
   const dialog = document.querySelector('dialog');
   const message = document.querySelector('#status');
   const storage = prototypeStorage(mode);
@@ -49,8 +50,8 @@ export function start(mode) {
   }
 
   function renderHeader() {
-    const previous = document.activeElement?.getAttribute('href');
-    const inHeader = header.contains(document.activeElement);
+    const navigation = dock?.contains(document.activeElement) ? dock : header;
+    const previous = navigation.contains(document.activeElement) && document.activeElement.getAttribute('href');
     const count = number(cartCount(cart));
     const brand = `<a class="brand" href="?view=${defaultView}" data-view="${defaultView}">${icon('cone')}<span>بستنی نون</span></a>`;
     const links = `<a href="?view=menu" data-view="menu" ${view === 'menu' ? 'aria-current="page"' : ''}>${icon('menu')} <span>منو</span></a>
@@ -69,7 +70,6 @@ export function start(mode) {
           ${brand}
           <button class="icon-button navigation-toggle" type="button" data-action="open-navigation" aria-label="باز کردن فهرست" aria-haspopup="dialog" aria-controls="navigation-drawer">${icon('hamburger')}</button>
         </div>
-        <nav class="site-links floating-dock" aria-label="ناوبری فروشگاه">${links}${cartLink}</nav>
         <dialog class="navigation-drawer" id="navigation-drawer" aria-labelledby="navigation-title">
           <div class="drawer-content">
             <div class="drawer-heading">
@@ -88,7 +88,12 @@ export function start(mode) {
           ${cartLink}
         </div>
         ${switcher}`;
-    if (inHeader && previous) Array.from(header.querySelectorAll('a')).find(link => link.getAttribute('href') === previous)?.focus({ preventScroll: true });
+    if (dock) {
+      dock.innerHTML = links + cartLink;
+      dock.dataset.active = dock.querySelector('[aria-current="page"]')?.dataset.view ?? '';
+      dock.hidden = false;
+    }
+    if (previous) Array.from(navigation.querySelectorAll('a')).find(link => link.getAttribute('href') === previous)?.focus({ preventScroll: true });
   }
 
   function render() {
