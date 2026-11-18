@@ -143,6 +143,8 @@ async function checkFloatingNavigation(page) {
   await dock.locator('[data-view="builder"]').click();
   assert.ok(await dockElement.evaluate(element => element === document.querySelector('.floating-dock')));
   assert.equal(await dock.getAttribute('data-active'), 'builder');
+  await page.waitForFunction(() => [...document.querySelector('main').children].some(section =>
+    section.getAnimations().some(animation => animation.animationName === 'dock-reveal')));
   await page.waitForFunction(() => {
     const highlight = getComputedStyle(document.querySelector('.floating-dock'), '::before');
     return highlight.transform !== 'none' && new DOMMatrixReadOnly(highlight.transform).m41 < 0;
@@ -153,6 +155,9 @@ async function checkFloatingNavigation(page) {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   assert.ok(await dock.evaluate(element => getComputedStyle(element, '::before')
     .transitionDuration.split(',').every(duration => parseFloat(duration) === 0)));
+  await dock.locator('[data-view="builder"]').click();
+  assert.ok(await page.locator('main').evaluate(element => element.getAnimations({ subtree: true })
+    .every(animation => animation.animationName !== 'dock-reveal')));
   await page.emulateMedia({ reducedMotion: 'no-preference' });
 
   for (const width of [390, 1100]) {

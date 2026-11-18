@@ -187,7 +187,11 @@ export function start(mode) {
     const data = control.dataset;
     if (data.view && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
       event.preventDefault();
+      const dockSwitch = dock?.contains(control) && data.view !== view;
       go(data.view);
+      if (dockSwitch) {
+        for (const section of main.children) section.classList.add('dock-arrival');
+      }
     } else if (data.category) {
       category = data.category;
       const drawer = control.closest('.navigation-drawer');
