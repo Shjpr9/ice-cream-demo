@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f8f7f0">
+  <title>بستنی نون | طرح C</title>
+  <link rel="stylesheet" href="../shared/base.css">
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">رفتن به محتوا</a>
+  <header class="site-header"></header>
+  <div class="demo-label" hidden>
+    <p>نسخهٔ آزمایشی · سفارش‌ها واقعی نیستند</p>
+    <button type="button" data-action="dismiss-demo" aria-label="بستن پیام نسخهٔ آزمایشی">×</button>
+  </div>
+  <main id="main" class="shell"></main>
+  <dialog aria-labelledby="detail-title">
+    <button type="button" class="icon-button dialog-close" data-action="close-detail" aria-label="بستن جزئیات" autofocus>×</button>
+    <form id="product-form"></form>
+  </dialog>
+  <p id="status" role="status" class="toast"></p>
+  <noscript><p class="shell">برای استفاده از منوی تعاملی، جاوااسکریپت مرورگر را فعال کن.</p></noscript>
+</body>
+</html>

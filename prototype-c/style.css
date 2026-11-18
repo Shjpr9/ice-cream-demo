@@ -1,0 +1,30 @@
+@font-face { font-family: "Noto Kufi Arabic"; src: url("../shared/assets/fonts/NotoKufiArabic-Regular.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Noto Kufi Arabic"; src: url("../shared/assets/fonts/NotoKufiArabic-Bold.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+:root { --font: "Noto Kufi Arabic", Tahoma, sans-serif; --paper: #fbf9ef; --surface: #fffef7; --accent: #375938; --accent-hover: #28462b; --soft: #edf0db; --line: #dedfcb; --radius: 16px; }
+body { font-size: .9rem; }
+.brand .icon { background: #f4d1a1; }
+.builder-intro h1 { line-height: 1.5; font-size: clamp(1.8rem, 5vw, 3.3rem); }
+.builder-layout { grid-template-columns: minmax(0, 1.22fr) minmax(260px, .78fr); grid-template-areas: "controls preview"; }
+.builder-controls { align-self: stretch; padding: clamp(14px, 3vw, 28px); border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.builder-preview { border: 1px solid var(--line); }
+.preview-art { min-height: 300px; background: #f6dfaf; }
+.preview-info { border: 0; }
+.builder-steps { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; padding: 0; margin: 0 0 21px; list-style: none; border-block-end: 1px solid var(--line); }
+.builder-steps button { width: 100%; min-height: 67px; display: grid; justify-items: center; align-content: center; gap: 3px; padding: 3px 1px; color: var(--muted); background: transparent; border: 0; border-block-end: 3px solid transparent; font-size: clamp(.67rem, 1.5vw, .87rem); }
+.builder-steps button[aria-current] { color: var(--accent); border-block-end-color: var(--accent); font-weight: 700; }
+.builder-steps span { display: grid; place-items: center; width: 25px; height: 25px; border-radius: 50%; background: var(--soft); }
+.builder-steps button[aria-current] span { color: white; background: var(--accent); }
+.container-choices .builder-choice { min-height: 116px; gap: 6px; }
+.container-choices .icon { width: 34px; height: 34px; color: var(--accent); }
+.builder-group h2 { font-size: 1.36rem; }
+.flavor-choices strong { font-size: .81rem; }
+.flavor-choices small, .container-choices small { font-size: .68rem; }
+@media (max-width: 720px) {
+  .builder-intro { margin-bottom: 14px; }
+  .builder-layout { grid-template-columns: minmax(0, 1fr); grid-template-areas: "preview" "controls"; gap: 13px; }
+  .preview-art { min-height: 130px; }
+  .ice-preview { max-height: 130px; }
+  .builder-steps { margin-bottom: 12px; }
+  .builder-steps button { min-height: 60px; }
+  .container-choices .builder-choice { min-height: 90px; }
+}
