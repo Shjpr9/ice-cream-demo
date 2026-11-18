@@ -1,6 +1,7 @@
 import { allergens, productImage } from './data/catalog.js';
 
 const paths = {
+  hamburger: '<path d="M4 6h16M4 12h16M4 18h16"/>',
   bag: '<path d="M5 8h14l1 13H4L5 8Z"/><path d="M9 10V6a3 3 0 1 1 6 0v4"/>',
   cone: '<path d="m7 13 5 9 5-9M7 13a3 3 0 0 1-.6-5.9 5.6 5.6 0 0 1 11.2 0A3 3 0 0 1 17 13Z"/><path d="m10 15 4 3"/>',
   menu: '<path d="M6 4h12a2 2 0 0 1 2 2v14H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm2 5h8m-8 4h8m-8 4h5"/>',

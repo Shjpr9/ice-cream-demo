@@ -27,7 +27,7 @@ async function checkAssets(page, font) {
 
 async function orderInPrototype(page, mode) {
   await page.goto(site + 'prototype-' + mode + '/?view=menu');
-  await page.locator('[data-category="traditional"]').click();
+  await page.locator('main [data-category="traditional"]').click();
   await page.locator('button[data-product="saffron"]').first().click();
   const dialog = page.locator('dialog[open]');
   await dialog.locator('[value="large"]').check();
@@ -116,6 +116,29 @@ async function checkoutResetsAfterEmptyCart(page) {
   assert.equal(await page.locator('#notes').inputValue(), '');
 }
 
+async function checkFloatingNavigation(page) {
+  await page.goto(site + 'prototype-e/?view=cart');
+  const dock = page.locator('.floating-dock');
+  assert.equal(await dock.locator('a[aria-current="page"]').getAttribute('data-view'), 'cart');
+  const toggle = page.getByRole('button', { name: 'باز کردن فهرست' });
+  await toggle.click();
+  const drawer = page.getByRole('dialog', { name: 'دسته‌بندی‌ها' });
+  await drawer.waitFor();
+  await page.keyboard.press('Escape');
+  await drawer.waitFor({ state: 'hidden' });
+  assert.ok(await toggle.evaluate(button => button === document.activeElement));
+  await toggle.click();
+  await drawer.locator('[data-category="traditional"]').click();
+  assert.equal(new URL(page.url()).searchParams.get('view'), 'menu');
+  assert.equal(await page.locator('main [data-category="traditional"]').getAttribute('aria-pressed'), 'true');
+  await drawer.waitFor({ state: 'hidden' });
+
+  const lastProduct = page.locator('.menu-card').last();
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+  const [product, floating] = await Promise.all([lastProduct.boundingBox(), dock.boundingBox()]);
+  assert.ok(product && floating && product.y + product.height <= floating.y);
+}
+
 async function run() {
   const browser = await chromium.launch();
   try {
@@ -134,7 +157,7 @@ async function run() {
       try { await route.fulfill({ path: file, contentType: types[path.extname(file)] }); }
       catch (error) { errors.push(error.message); await route.abort(); }
     });
-    const fonts = { a: 'Vazirmatn', b: 'Noto Naskh Arabic', c: 'Noto Kufi Arabic', d: 'Dastkhat' };
+    const fonts = { a: 'Vazirmatn', b: 'Noto Naskh Arabic', c: 'Noto Kufi Arabic', d: 'Dastkhat', e: 'Dastkhat' };
     for (const width of [320, 390, 768, 1366]) {
       await page.setViewportSize({ width, height: 850 });
       await page.goto(site);
@@ -161,6 +184,7 @@ async function run() {
     await page.evaluate(() => localStorage.clear());
     for (const mode of Object.keys(fonts)) await orderInPrototype(page, mode);
     await checkoutResetsAfterEmptyCart(page);
+    await checkFloatingNavigation(page);
     assert.deepEqual(errors, []);
   } finally {
     await browser.close();

@@ -77,7 +77,7 @@ test('every referenced product, preview photo and Persian font is checked in', a
 test('every prototype renders the selected available builder configuration', async () => {
   const { renderBuilder } = await import('../shared/builder.js');
   const selection = { container: 'cone', scoops: ['vanilla', 'pistachio'], toppings: ['almond'] };
-  for (const mode of ['a', 'b', 'c', 'd']) {
+  for (const mode of ['a', 'b', 'c', 'd', 'e']) {
     const rendered = renderBuilder({ selection, activeScoop: 1, step: 4 }, mode);
     assert.match(rendered, /بستنی خودت رو بساز/);
     assert.match(rendered, /۱۵۴٬۰۰۰ تومان/);

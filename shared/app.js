@@ -8,7 +8,7 @@ import { quickMenu, discoveryMenu, productDetails } from './menu.js';
 import { methods, payments, renderCart, renderCheckout, renderConfirmation } from './checkout.js';
 import { icon } from './ui.js';
 
-const prototypes = { a: 'منومحور', b: 'کشف طعم‌ها', c: 'بستنی‌ساز', d: 'دستخط' };
+const prototypes = { a: 'منومحور', b: 'کشف طعم‌ها', c: 'بستنی‌ساز', d: 'دستخط', e: 'شناور' };
 const views = ['menu', 'builder', 'cart', 'checkout', 'confirmation'];
 const createCheckout = () => ({ step: 0, method: 'here', payment: 'online', notes: '' });
 
@@ -52,21 +52,42 @@ export function start(mode) {
     const previous = document.activeElement?.getAttribute('href');
     const inHeader = header.contains(document.activeElement);
     const count = number(cartCount(cart));
-    header.innerHTML = `<div class="header-inner">
-      <a class="brand" href="?view=${defaultView}" data-view="${defaultView}">${icon('cone')}<span>بستنی نون</span></a>
-      <nav class="site-links" aria-label="ناوبری فروشگاه">
-        <a href="?view=menu" data-view="menu" ${view === 'menu' ? 'aria-current="page"' : ''}>${icon('menu')} <span>منو</span></a>
-        <a href="?view=builder" data-view="builder" ${view === 'builder' ? 'aria-current="page"' : ''}>${icon('cone')} <span>بستنی‌ساز</span></a>
-      </nav>
-      <a href="?view=cart" data-view="cart" class="cart-link" aria-label="سبد سفارش، ${count} مورد" ${['cart', 'checkout'].includes(view) ? 'aria-current="page"' : ''}>
-        ${icon('bag')} <span>سبد</span><b>${count}</b>
-      </a>
-    </div>
-    <nav class="prototype-switcher" aria-label="مقایسهٔ نمونه‌ها">
+    const brand = `<a class="brand" href="?view=${defaultView}" data-view="${defaultView}">${icon('cone')}<span>بستنی نون</span></a>`;
+    const links = `<a href="?view=menu" data-view="menu" ${view === 'menu' ? 'aria-current="page"' : ''}>${icon('menu')} <span>منو</span></a>
+      <a href="?view=builder" data-view="builder" ${view === 'builder' ? 'aria-current="page"' : ''}>${icon('cone')} <span>بستنی‌ساز</span></a>`;
+    const cartLink = `<a href="?view=cart" data-view="cart" class="cart-link" aria-label="سبد سفارش، ${count} مورد" ${['cart', 'checkout'].includes(view) ? 'aria-current="page"' : ''}>
+      ${icon('bag')} <span>سبد</span><b>${count}</b>
+    </a>`;
+    const switcher = `<nav class="prototype-switcher" aria-label="مقایسهٔ نمونه‌ها">
       <a class="review-home" href="../">مقایسهٔ طرح‌ها</a>
       ${Object.entries(prototypes).map(([key, title]) => `<a class="switcher-link" href="../prototype-${key}/?view=${view}"
         ${key === mode ? 'aria-current="page"' : ''}><b lang="en">${key.toUpperCase()}</b><span>${title}</span></a>`).join('')}
     </nav>`;
+
+    header.innerHTML = mode === 'e'
+      ? `<div class="header-inner">
+          ${brand}
+          <button class="icon-button navigation-toggle" type="button" data-action="open-navigation" aria-label="باز کردن فهرست" aria-haspopup="dialog" aria-controls="navigation-drawer">${icon('hamburger')}</button>
+        </div>
+        <nav class="site-links floating-dock" aria-label="ناوبری فروشگاه">${links}${cartLink}</nav>
+        <dialog class="navigation-drawer" id="navigation-drawer" aria-labelledby="navigation-title">
+          <div class="drawer-content">
+            <div class="drawer-heading">
+              <h2 id="navigation-title">دسته‌بندی‌ها</h2>
+              <button class="icon-button" type="button" data-action="close-navigation" aria-label="بستن فهرست" autofocus>${icon('close')}</button>
+            </div>
+            <nav class="drawer-categories" aria-label="دسته‌بندی منو">
+              ${[{ id: 'all', name: 'همهٔ محصولات' }, ...categories].map(item => `<button type="button" data-category="${item.id}" aria-pressed="${item.id === category}">${item.name}${icon('left')}</button>`).join('')}
+            </nav>
+            ${switcher}
+          </div>
+        </dialog>`
+      : `<div class="header-inner">
+          ${brand}
+          <nav class="site-links" aria-label="ناوبری فروشگاه">${links}</nav>
+          ${cartLink}
+        </div>
+        ${switcher}`;
     if (inHeader && previous) Array.from(header.querySelectorAll('a')).find(link => link.getAttribute('href') === previous)?.focus({ preventScroll: true });
   }
 
@@ -152,6 +173,10 @@ export function start(mode) {
   });
 
   document.addEventListener('click', event => {
+    if (event.target.matches('.navigation-drawer[open]')) {
+      event.target.close();
+      return;
+    }
     const control = event.target.closest('button, a');
     if (!control || control.disabled) return;
     const data = control.dataset;
@@ -160,8 +185,16 @@ export function start(mode) {
       go(data.view);
     } else if (data.category) {
       category = data.category;
-      rerenderControl(control, 'category', category);
-      document.activeElement.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+      const drawer = control.closest('.navigation-drawer');
+      if (drawer) {
+        drawer.close();
+        save();
+        go('menu');
+        main.querySelector('#menu-list-title').focus();
+      } else {
+        rerenderControl(control, 'category', category);
+        document.activeElement.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+      }
     } else if (data.product) {
       detailProduct = findById(products, data.product);
       dialog.querySelector('form').innerHTML = productDetails(detailProduct, detailProduct.variants[0]);
@@ -209,13 +242,17 @@ export function start(mode) {
       checkout.step -= 1;
       render();
       document.querySelector('#checkout-step-title').focus();
+    } else if (data.action === 'open-navigation') {
+      header.querySelector('.navigation-drawer').showModal();
+    } else if (data.action === 'close-navigation') {
+      control.closest('dialog').close();
     } else if (data.action === 'close-detail') {
       dialog.close();
     } else if (data.action === 'dismiss-demo') {
       hideDemo = true;
       save();
       control.closest('.demo-label').hidden = true;
-      document.querySelector('.review-home').focus();
+      header.querySelector('.navigation-toggle, .review-home').focus();
     }
   });
 
