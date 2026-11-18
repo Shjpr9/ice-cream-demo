@@ -1,6 +1,6 @@
 # بستنی نون
 
-Three interactive Persian, RTL ordering demos for a fictional Iranian ice cream shop. All three use the same mock products, ingredients, allergens, pricing, and order rules.
+Four interactive Persian, RTL ordering demos for a fictional Iranian ice cream shop. All four use the same mock products, ingredients, allergens, pricing, and order rules.
 
 ## Run locally
 
@@ -17,6 +17,7 @@ The site uses HTML, CSS, and browser-native JavaScript modules. It needs a stati
 | A · Menu-first | `prototype-a/` | Sticky categories, compact product grid, and a single-page builder | Vazirmatn |
 | B · Discovery-first | `prototype-b/` | Photo-led flavor guide, visible allergens, and expandable builder sections | Noto Naskh Arabic |
 | C · Builder-first | `prototype-c/` | Opens in a five-step builder with a live illustration and price. The full catalog is one tap away. | Noto Kufi Arabic |
+| D · Menu-first with Dastkhat | `prototype-d/` | Same layout and ordering flow as A for a typography comparison | [Dastkhat](https://github.com/dastyar-io/dastkhat-font) |
 
 Fonts and product images are served locally. The product image set is AI-generated for the fictional menu. Font license copies are in [shared/assets/fonts](shared/assets/fonts/). The product catalog and availability are in [shared/data/catalog.js](shared/data/catalog.js).
 
@@ -52,5 +53,6 @@ The expected URLs for this repository are:
 - A — `https://shjpr9.github.io/ice-cream-demo/prototype-a/`
 - B — `https://shjpr9.github.io/ice-cream-demo/prototype-b/`
 - C — `https://shjpr9.github.io/ice-cream-demo/prototype-c/`
+- D — `https://shjpr9.github.io/ice-cream-demo/prototype-d/`
 
 Direct links such as `prototype-c/?view=menu` work under the same repository path. Each prototype has its own `index.html`.

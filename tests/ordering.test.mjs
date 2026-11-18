@@ -62,11 +62,11 @@ test('every referenced product, preview photo and Persian font is checked in', a
     const image = await readFile(new URL(productImage(id)));
     assert.equal(image.toString('ascii', 8, 12), 'WEBP', id);
   }
-  for (const mode of ['a', 'b', 'c']) {
+  for (const mode of ['a', 'b', 'c', 'd']) {
     const css = new URL('../prototype-' + mode + '/style.css', import.meta.url);
     const stylesheet = await readFile(css, 'utf8');
     const fonts = [...stylesheet.matchAll(/url\("([^"]+\.woff2)"\)/g)];
-    assert.equal(fonts.length, 2);
+    assert.equal(fonts.length, mode === 'd' ? 1 : 2);
     for (const [, path] of fonts) {
       const font = await readFile(new URL(path, css));
       assert.equal(font.toString('ascii', 0, 4), 'wOF2', path);
@@ -74,10 +74,10 @@ test('every referenced product, preview photo and Persian font is checked in', a
   }
 });
 
-test('all three builder modes render the selected available configuration', async () => {
+test('every prototype renders the selected available builder configuration', async () => {
   const { renderBuilder } = await import('../shared/builder.js');
   const selection = { container: 'cone', scoops: ['vanilla', 'pistachio'], toppings: ['almond'] };
-  for (const mode of ['a', 'b', 'c']) {
+  for (const mode of ['a', 'b', 'c', 'd']) {
     const rendered = renderBuilder({ selection, activeScoop: 1, step: 4 }, mode);
     assert.match(rendered, /بستنی خودت رو بساز/);
     assert.match(rendered, /۱۵۴٬۰۰۰ تومان/);

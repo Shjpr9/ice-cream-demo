@@ -8,7 +8,7 @@ import { quickMenu, discoveryMenu, productDetails } from './menu.js';
 import { methods, payments, renderCart, renderCheckout, renderConfirmation } from './checkout.js';
 import { icon } from './ui.js';
 
-const prototypes = { a: 'منومحور', b: 'کشف طعم‌ها', c: 'بستنی‌ساز' };
+const prototypes = { a: 'منومحور', b: 'کشف طعم‌ها', c: 'بستنی‌ساز', d: 'دستخط' };
 const views = ['menu', 'builder', 'cart', 'checkout', 'confirmation'];
 const createCheckout = () => ({ step: 0, method: 'here', payment: 'online', notes: '' });
 

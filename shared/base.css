@@ -174,8 +174,8 @@ legend { font-weight: 700; margin-bottom: 5px; }
   .site-links a, .cart-link { padding-inline: 6px; font-size: .8rem; }
   .site-links { gap: 1px; }
   .site-links .icon { display: none; }
-  .prototype-switcher { font-size: .67rem; gap: 2px; }
-  .prototype-switcher a { padding-inline: 5px; }
+  .prototype-switcher { font-size: .67rem; gap: 2px; padding-inline: 4px; flex-wrap: nowrap; justify-content: safe center; overflow-x: auto; scrollbar-width: none; }
+  .prototype-switcher a { flex-shrink: 0; gap: 3px; padding-inline: 4px; }
   .menu-layout { display: block; }
   .category-nav { z-index: 2; top: 100px; margin-block-end: 15px; padding: 4px; }
   .category-nav h2 { display: none; }

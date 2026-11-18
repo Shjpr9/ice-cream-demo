@@ -134,7 +134,7 @@ async function run() {
       try { await route.fulfill({ path: file, contentType: types[path.extname(file)] }); }
       catch (error) { errors.push(error.message); await route.abort(); }
     });
-    const fonts = { a: 'Vazirmatn', b: 'Noto Naskh Arabic', c: 'Noto Kufi Arabic' };
+    const fonts = { a: 'Vazirmatn', b: 'Noto Naskh Arabic', c: 'Noto Kufi Arabic', d: 'Dastkhat' };
     for (const width of [320, 390, 768, 1366]) {
       await page.setViewportSize({ width, height: 850 });
       await page.goto(site);
@@ -153,6 +153,9 @@ async function run() {
     assert.equal(await page.locator('[data-container="cup"]').getAttribute('aria-pressed'), 'true');
     await page.locator('.switcher-link[href*="prototype-c"]').click();
     assert.equal(new URL(page.url()).searchParams.get('view'), 'builder');
+    await page.locator('.switcher-link[href*="prototype-d"]').click();
+    assert.equal(new URL(page.url()).searchParams.get('view'), 'builder');
+    assert.equal(await page.locator('[data-container="cup"]').getAttribute('aria-pressed'), 'true');
     await page.locator('.switcher-link[href*="prototype-a"]').click();
     assert.equal(await page.locator('[data-container="bowl"]').getAttribute('aria-pressed'), 'true');
     await page.evaluate(() => localStorage.clear());
