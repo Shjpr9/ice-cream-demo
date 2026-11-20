@@ -499,3 +499,10 @@ dialog[open] .detail-copy > :nth-child(n+6) { animation-delay: .12s; }
   .editorial-product .card-image { width: min(60%, 220px); }
   .editorial-product .photo { aspect-ratio: 1 !important; }
 }
+
+/* Glass cards outside Prototype B (E uses them in its menu grid): base layout B's own stylesheet provides */
+.editorial-product .editorial-copy { display: flex; flex: 1; flex-direction: column; }
+.editorial-product .editorial-copy > p:not(.eyebrow) { color: var(--muted); }
+.editorial-product .editorial-action { display: flex; flex-wrap: wrap; align-items: center; width: 100%; }
+.menu-grid:has(.editorial-product) { row-gap: 52px; padding-top: 34px; }
+@media (max-width: 560px) { .menu-grid:has(.editorial-product) { grid-template-columns: minmax(0, 1fr); row-gap: 44px; } }

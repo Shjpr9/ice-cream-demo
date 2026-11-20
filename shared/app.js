@@ -93,7 +93,7 @@ export function start(mode) {
         if (checkout.step === 0 && cart.length) main.querySelector('#notes').value = checkout.notes;
         break;
       case 'confirmation': main.innerHTML = renderConfirmation(order); break;
-      default: main.innerHTML = mode === 'b' ? discoveryMenu(category) : quickMenu(category, mode === 'c');
+      default: main.innerHTML = mode === 'b' ? discoveryMenu(category) : quickMenu(category, mode === 'c', mode === 'e');
     }
     if (dock && previousView) {
       const arrivals = previousView !== view ? main.children : switchTarget && main.querySelectorAll(switchTarget);

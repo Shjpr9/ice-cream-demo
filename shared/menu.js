@@ -32,7 +32,7 @@ function menuCard(product) {
   </article>`;
 }
 
-export function quickMenu(category, compact = false) {
+export function quickMenu(category, compact = false, rich = false) {
   const current = findById(filters, category) ?? all;
   const items = visibleProducts(current.id);
   return `
@@ -47,7 +47,7 @@ export function quickMenu(category, compact = false) {
           <${compact ? 'h1' : 'h2'} id="${compact ? 'view-title' : 'menu-list-title'}" tabindex="-1">${current.name}</${compact ? 'h1' : 'h2'}>
           <span>${number(items.length)} محصول</span>
         </div>
-        <div class="menu-grid">${items.map(menuCard).join('')}</div>
+        <div class="menu-grid">${items.map(rich ? editorialProduct : menuCard).join('')}</div>
       </section>
     </div>`;
 }

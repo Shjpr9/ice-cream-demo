@@ -1,3 +1,3 @@
-import { start } from '../shared/app.js?v=5';
+import { start } from '../shared/app.js?v=6';
 
 start('e');
