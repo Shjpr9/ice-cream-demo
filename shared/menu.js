@@ -5,6 +5,7 @@ import { allergenList, icon, photo } from './ui.js';
 const all = { id: 'all', name: 'همهٔ محصولات' };
 const filters = [all, ...categories];
 const featured = ['saffron', 'pistachio', 'strawberry'];
+const badge = product => featured.includes(product.id) ? '<span class="badge">محبوب مشتری‌ها</span>' : '';
 const visibleProducts = category => category === 'all' ? products : products.filter(product => product.category === category);
 
 function categoryButton(category, active) {
@@ -15,6 +16,7 @@ function categoryButton(category, active) {
 
 function menuCard(product) {
   return `<article class="menu-card">
+    ${badge(product)}
     <button class="card-image" type="button" data-product="${product.id}" aria-label="جزئیات ${product.name}">${photo(product.id)}</button>
     <div class="card-copy">
       <h3><button type="button" data-product="${product.id}">${product.name}</button></h3>
@@ -56,6 +58,7 @@ export function quickMenu(category, compact = false) {
 
 function editorialProduct(product) {
   return `<article class="editorial-product">
+    ${badge(product)}
     <button type="button" class="card-image" data-product="${product.id}" aria-label="جزئیات ${product.name}">${photo(product.id)}</button>
     <div class="editorial-copy">
       <p class="eyebrow">${product.taste}</p>

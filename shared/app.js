@@ -115,6 +115,7 @@ export function start(mode) {
   function toast(text) {
     message.textContent = text;
     message.classList.add('visible');
+    document.querySelectorAll('.cart-link b').forEach(badge => badge.classList.add('bump'));
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => {
       message.classList.remove('visible');
