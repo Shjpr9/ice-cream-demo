@@ -62,6 +62,7 @@ export function start(mode) {
     </a>`;
     const switcher = `<nav class="prototype-switcher" aria-label="مقایسهٔ نمونه‌ها">
       <a class="review-home" href="../">مقایسهٔ طرح‌ها</a>
+      <a class="admin-link" href="../admin/">پنل مدیریت</a>
       ${Object.entries(prototypes).map(([key, title]) => `<a class="switcher-link" href="../prototype-${key}/?view=${view}"
         ${key === mode ? 'aria-current="page"' : ''}><b lang="en">${key.toUpperCase()}</b><span>${title}</span></a>`).join('')}
     </nav>`;

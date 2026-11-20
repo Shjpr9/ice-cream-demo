@@ -418,3 +418,4 @@ dialog[open] .detail-copy > :nth-child(n+6) { animation-delay: .12s; }
 @media (prefers-reduced-motion: reduce) {
   .hero-slide, .hero-caption { transition: none !important; }
 }
+.prototype-switcher .admin-link { color: var(--accent); font-weight: 700; }

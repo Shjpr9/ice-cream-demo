@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#fff6ef">
+  <title>بستنی نون | پنل مدیریت</title>
+  <link rel="stylesheet" href="../shared/base.css">
+  <link rel="stylesheet" href="../shared/appetite.css">
+  <link rel="stylesheet" href="./admin.css">
+  <script type="module" src="./admin.js"></script>
+</head>
+<body class="admin">
+  <a class="skip-link" href="#admin-main">رفتن به محتوا</a>
+  <aside class="admin-side">
+    <a class="admin-brand" href="#dashboard">
+      <span class="admin-logo" aria-hidden="true"></span>
+      <span><strong>بستنی نون</strong><small>پنل مدیریت</small></span>
+    </a>
+    <nav class="admin-nav" aria-label="بخش‌های پنل"></nav>
+    <a class="admin-back" href="../">مقایسهٔ طرح‌ها</a>
+  </aside>
+  <div class="admin-body">
+    <header class="admin-top">
+      <div>
+        <p class="admin-date"></p>
+        <h1 id="admin-title" tabindex="-1"></h1>
+      </div>
+      <div class="admin-tools">
+        <label class="switch-row"><input type="checkbox" role="switch" id="live-toggle" checked><span class="switch" aria-hidden="true"></span><span>سفارش زنده</span></label>
+        <button type="button" class="secondary" data-action="reset">بازنشانی دمو</button>
+      </div>
+    </header>
+    <p class="admin-demo">داده‌های این پنل نمایشی‌اند. سفارش‌هایی که در طرح‌های A تا E ثبت کنی، در همین مرورگر این‌جا نشان داده می‌شوند.</p>
+    <main id="admin-main" class="admin-main"></main>
+  </div>
+  <p id="admin-status" role="status" class="toast"></p>
+  <noscript><p>برای استفاده از پنل، جاوااسکریپت مرورگر را فعال کن.</p></noscript>
+</body>
+</html>
