@@ -152,7 +152,7 @@ async function checkFloatingNavigation(page) {
   await waitForMotion('view-enter', 'menu-grid');
   assert.equal(await page.locator('main [data-category="traditional"]').getAttribute('aria-pressed'), 'true');
   await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
-  const [product, floating] = await Promise.all([page.locator('.menu-card').last().boundingBox(), dock.boundingBox()]);
+  const [product, floating] = await Promise.all([page.locator('.menu-grid > article').last().boundingBox(), dock.boundingBox()]);
   assert.ok(product && floating && product.y + product.height <= floating.y);
 
   await dock.locator('[data-view="builder"]').click();
