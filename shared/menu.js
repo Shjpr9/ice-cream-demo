@@ -1,6 +1,7 @@
 import { categories, products, findById } from './data/catalog.js';
 import { money, number } from './utils/ordering.js';
 import { allergenList, icon, photo } from './ui.js';
+import { productImage } from './data/catalog.js';
 import { heroShowcase } from './hero.js';
 
 const all = { id: 'all', name: 'همهٔ محصولات' };
@@ -54,15 +55,17 @@ export function quickMenu(category, compact = false) {
 function editorialProduct(product) {
   return `<article class="editorial-product">
     ${badge(product)}
-    <button type="button" class="card-image" data-product="${product.id}" aria-label="جزئیات ${product.name}">${photo(product.id)}</button>
+    <button type="button" class="card-image" data-product="${product.id}" aria-label="جزئیات ${product.name}">
+      ${photo(product.id)}<img class="pop-img" src="${productImage(product.id)}" alt="" width="309" height="309" loading="lazy" aria-hidden="true">
+    </button>
     <div class="editorial-copy">
       <p class="eyebrow">${product.taste}</p>
       <h3>${product.name}</h3>
       <p>${product.description}</p>
-      ${allergenList(product.allergens)}
+      ${allergenList(product.allergens, 'این طعم حاوی')}
       <div class="editorial-action">
         <strong>${money(product.price)}</strong>
-        <button type="button" class="text-button" data-product="${product.id}">${product.available ? 'مواد و انتخاب' : 'جزئیات · ناموجود'} ${icon('left')}</button>
+        <button type="button" class="primary quick-add" data-quick-add="${product.id}" ${product.available ? '' : 'disabled'}>${product.available ? icon('plus') + ' سفارش' : 'فعلاً ناموجود'}</button>
       </div>
     </div>
   </article>`;

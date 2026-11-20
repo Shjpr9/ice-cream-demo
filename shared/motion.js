@@ -169,7 +169,8 @@ export function initMotion(main) {
     const control = event.target.closest('button');
     if (!control) return;
     const data = control.dataset;
-    if (data.heroStep) showSlide(hero.index + Number(data.heroStep));
+    if (data.quickAdd) flyToCart(control.closest('article').querySelector('.photo img'));
+    else if (data.heroStep) showSlide(hero.index + Number(data.heroStep));
     else if (data.heroGo) showSlide(Number(data.heroGo));
     else if (data.heroPause !== undefined) {
       hero.paused = !hero.paused;

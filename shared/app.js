@@ -186,6 +186,14 @@ export function start(mode) {
       detailProduct = findById(products, data.product ?? data.heroProduct);
       dialog.querySelector('form').innerHTML = productDetails(detailProduct, detailProduct.variants[0]);
       dialog.showModal();
+    } else if (data.quickAdd) {
+      const product = findById(products, data.quickAdd);
+      const item = productOrder(product.id, product.variants[0].id);
+      if (!item) return;
+      cart = putItem(cart, item);
+      save();
+      renderHeader();
+      toast(item.name + ' به سبد اضافه شد.');
     } else if (data.fill) {
       const input = document.getElementById(data.fill);
       input.value = data.fill === 'phone' ? demoPhone : demoCode;

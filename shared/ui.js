@@ -24,10 +24,12 @@ export function photo(id, alt = '', { eager = false } = {}) {
   return `<div class="photo"><img src="${productImage(id)}" alt="${alt}" width="309" height="309" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'}></div>`;
 }
 
-export function allergenList(ids) {
-  return ids.length
-    ? `<ul class="allergens" aria-label="حساسیت‌زاها">${ids.map(id => `<li>${icon('warning')}${allergens[id]}</li>`).join('')}</ul>`
-    : '<p class="muted">در ترکیبات ثبت‌شده موردی ذکر نشده است.</p>';
+export function allergenList(ids, label) {
+  const list = `<ul class="allergens" aria-label="حساسیت‌زاها">${ids.map(id => `<li>${allergens[id]}</li>`).join('')}</ul>`;
+  if (label) {
+    return `<div class="contains">${icon('info')}<span>${ids.length ? label : 'بدون لبنیات، مغز، گلوتن و تخم‌مرغ'}</span>${ids.length ? list : ''}</div>`;
+  }
+  return ids.length ? list : '<p class="muted">در ترکیبات ثبت‌شده موردی ذکر نشده است.</p>';
 }
 
 export const escapeHtml = value => String(value).replace(/[&<>"']/g, char => ({
