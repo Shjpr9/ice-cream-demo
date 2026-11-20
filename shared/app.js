@@ -7,6 +7,7 @@ import { initialSelection, renderBuilder } from './builder.js';
 import { quickMenu, discoveryMenu, productDetails } from './menu.js';
 import { methods, payments, renderCart, renderCheckout, renderConfirmation } from './checkout.js';
 import { icon } from './ui.js';
+import { initMotion } from './motion.js';
 
 const prototypes = { a: 'منومحور', b: 'کشف طعم‌ها', c: 'بستنی‌ساز', d: 'دستخط', e: 'شناور' };
 const views = ['menu', 'builder', 'cart', 'checkout', 'confirmation'];
@@ -180,8 +181,8 @@ export function start(mode) {
       category = data.category;
       rerenderControl(control, 'category', category, changed ? '.menu-grid' : undefined);
       document.activeElement.scrollIntoView({ block: 'nearest', inline: 'nearest' });
-    } else if (data.product) {
-      detailProduct = findById(products, data.product);
+    } else if (data.product || data.heroProduct) {
+      detailProduct = findById(products, data.product ?? data.heroProduct);
       dialog.querySelector('form').innerHTML = productDetails(detailProduct, detailProduct.variants[0]);
       dialog.showModal();
     } else if (data.fill) {
@@ -302,4 +303,5 @@ export function start(mode) {
     render();
   });
   render();
+  initMotion(main);
 }

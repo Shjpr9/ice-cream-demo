@@ -1,6 +1,7 @@
 import { categories, products, findById } from './data/catalog.js';
 import { money, number } from './utils/ordering.js';
 import { allergenList, icon, photo } from './ui.js';
+import { heroShowcase } from './hero.js';
 
 const all = { id: 'all', name: 'همهٔ محصولات' };
 const filters = [all, ...categories];
@@ -34,14 +35,8 @@ export function quickMenu(category, compact = false) {
   const current = findById(filters, category) ?? all;
   const items = visibleProducts(current.id);
   return `
-    ${compact ? '' : `<section class="menu-intro" aria-labelledby="view-title">
-      <div><p class="eyebrow">بستنی‌فروشی نون</p><h1 id="view-title" tabindex="-1">منوی امروز</h1><p>طعم دلخواهت رو پیدا کن و سر میز سفارش بده.</p></div>
-      <a href="?view=builder" data-view="builder" class="builder-banner">
-        <div>${icon('sparkle')}<strong>بستنی دلخواهت رو بساز</strong><span>از ظرف تا آخرین تاپینگ ${icon('left')}</span></div>
-        ${photo('cone')}
-      </a>
-    </section>`}
-    <div class="menu-layout">
+    ${compact ? '' : heroShowcase({ eyebrow: 'بستنی‌فروشی نون · منوی امروز', lines: ['شیرین‌ترین بستنی‌ها رو', 'از نون سفارش بده.'], target: 'menu-start' })}
+    <div class="menu-layout" id="menu-start">
       <nav class="category-nav" aria-label="دسته‌بندی منو">
         <h2>دسته‌بندی‌ها</h2>
         <div class="category-buttons">${filters.map(item => categoryButton(item, current.id)).join('')}</div>
@@ -76,15 +71,7 @@ function editorialProduct(product) {
 export function discoveryMenu(category) {
   const current = findById(filters, category) ?? all;
   const initial = current.id === 'all';
-  return `<header class="discovery-intro">
-    <div class="discovery-copy">
-      <p class="eyebrow">بستنی‌فروشی نون</p>
-      <h1 id="view-title" tabindex="-1">هر طعم،<br>یک داستان</h1>
-      <p>ترکیبات و مزهٔ هر بستنی رو بخون و با خیال راحت انتخاب کن.</p>
-      <a class="text-button" href="#flavor-guide">طعم‌ها رو ببین ${icon('left')}</a>
-    </div>
-    <figure>${photo('trio', 'سه اسکوپ بستنی توت‌فرنگی، وانیل و پسته', { eager: true })}<figcaption>توت‌فرنگی، وانیل و پسته</figcaption></figure>
-  </header>
+  return `${heroShowcase({ eyebrow: 'بستنی‌فروشی نون · راهنمای طعم‌ها', lines: ['هر طعم،', 'یک داستان شیرین.'], target: 'flavor-guide' })}
   <section id="flavor-guide" class="flavor-guide">
     <nav class="discovery-categories" aria-label="دسته‌بندی طعم‌ها">${filters.map(item => categoryButton(item, current.id)).join('')}</nav>
     <div class="section-heading"><div><h2>${initial ? 'از این طعم‌ها شروع کن' : current.name}</h2>${current.intro ? `<p>${current.intro}</p>` : ''}</div></div>

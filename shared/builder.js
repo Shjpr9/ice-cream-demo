@@ -19,26 +19,31 @@ const scoopPositions = [
   [[87, 162], [149, 162], [118, 114], [120, 68]],
 ];
 
+// Last drawn preview, so only scoops/toppings that just changed play the drop animation.
+let drawn = { scoops: [], toppings: [] };
+
 function preview(config) {
   const positions = scoopPositions[config.scoops.length - 1];
   const sortedToppings = [...config.toppings].sort();
+  const fresh = { scoops: config.scoops.map((id, index) => drawn.scoops[index] !== id), toppings: config.toppings.filter(id => !drawn.toppings.includes(id)) };
+  drawn = { scoops: [...config.scoops], toppings: [...config.toppings] };
   return `<svg class="ice-preview" viewBox="0 20 240 290" role="img" aria-label="پیش‌نمایش بستنی">
     <ellipse cx="120" cy="292" rx="61" ry="9" fill="#284530" opacity=".09"/>
     ${config.scoops.map((id, index) => {
       const [x, y] = positions[index];
-      return `<g transform="translate(${x} ${y})">
+      return `<g transform="translate(${x} ${y})"><g class="${fresh.scoops[index] ? 'scoop-new' : ''}" style="--d:${index * 70}ms">
         <path d="M-37 26c-7 0-11-5-9-10 1-4 5-8 6-14 4-25 20-39 42-39 20 0 37 15 40 37 1 8 8 12 7 18-1 5-7 8-14 8-13 0-15 5-28 5-12 0-18-5-27-3-8 2-12-2-17-2Z" fill="${findById(flavors, id).color}" stroke="#684537" stroke-opacity=".28"/>
         <path d="M-24-5q8-19 25-20m-23 35q9-5 16-4m17-15q8 2 12 10" fill="none" stroke="#fff" stroke-width="3" stroke-opacity=".31" stroke-linecap="round"/>
-      </g>`;
+      </g></g>`;
     }).join('')}
     ${containersArt[config.container]}
     ${sortedToppings.map((id, index) => {
       const [x, y] = positions.at(-1);
       const color = findById(toppings, id).color;
       const offset = index * 10;
-      return ['chocolate', 'caramel'].includes(id)
+      return `<g class="${fresh.toppings.includes(id) ? 'topping-new' : ''}">` + (['chocolate', 'caramel'].includes(id)
         ? `<path d="M${x - 24} ${y - 23 + index * 4}q10-6 15 3t16-1 18 6" stroke="${color}" stroke-width="4" fill="none" stroke-linecap="round"/>`
-        : `<g fill="${color}" transform="translate(${x - 24 + offset} ${y - 25 + (index % 2) * 9})"><circle r="4"/><circle cx="7" cy="5" r="2.5"/><circle cx="5" cy="-8" r="2.5"/></g>`;
+        : `<g fill="${color}" transform="translate(${x - 24 + offset} ${y - 25 + (index % 2) * 9})"><circle r="4"/><circle cx="7" cy="5" r="2.5"/><circle cx="5" cy="-8" r="2.5"/></g>`) + '</g>';
     }).join('')}
   </svg>`;
 }

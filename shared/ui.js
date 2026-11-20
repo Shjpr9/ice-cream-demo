@@ -14,6 +14,9 @@ const paths = {
   sparkle: '<path d="M12 2c0 7-3 10-10 10 7 0 10 3 10 10 0-7 3-10 10-10C15 12 12 9 12 2Z"/>',
   cup: '<path d="M7 7h10l-1.3 14H8.3L7 7Zm-2 0h14M9 3h6"/>',
   bowl: '<path d="M3 9h18a9 9 0 0 1-18 0Zm5 10h8M5 6h14"/>',
+  leaf: '<path d="M5 19c0-9 5-14 15-15 0 10-5 15-14 15Zm0 0 8-8"/>',
+  tag: '<path d="M3 12V4h8l10 10-8 8L3 12Z"/><path d="M7.5 7.5h.01"/>',
+  info: '<path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0-10v6m0-9h.01"/>',
 };
 export const icon = name => `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name]}</svg>`;
 
